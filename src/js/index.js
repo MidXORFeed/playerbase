@@ -1,3 +1,3 @@
-import x from './test';
+import HelloWorld from './test';
 
-console.log(`i imported ${x} from another module called test.js`);
+console.log(`Improted ${HelloWorld} from another module called test.js`);
