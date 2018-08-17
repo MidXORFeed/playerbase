@@ -1,3 +1,5 @@
-import HelloWorld from './test';
+import { models, views, controllers } from './playerbase';
 
-console.log(`Improted ${HelloWorld} from another module called test.js`);
+const state = {};
+state.controller2 = new controllers.CONTROLLER_NAME2();
+window.state = state;
