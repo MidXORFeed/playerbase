@@ -1,4 +1,4 @@
-export default class MODEL_NAME2 {
+export default class Authenticate {
     constructor() {
         
     }

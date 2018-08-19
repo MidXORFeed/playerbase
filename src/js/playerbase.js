@@ -1,12 +1,12 @@
 import CONTROLLER_NAME1 from './controllers/CONTROLLER_NAME1';
 import CONTROLLER_NAME2 from './controllers/CONTROLLER_NAME2';
 import CONTROLLER_NAME3 from './controllers/CONTROLLER_NAME3';
-import MODEL_NAME1 from './models/MODEL_NAME1';
-import MODEL_NAME2 from './models/MODEL_NAME2';
+import Authenticate from './models/Authenticate';
+import Search from './models/Search';
 import MODEL_NAME3 from './models/MODEL_NAME3';
 import VIEW_NAME1 from './views/VIEW_NAME1';
 import VIEW_NAME2 from './views/VIEW_NAME2';
 import VIEW_NAME3 from './views/VIEW_NAME3';
 export const controllers = { CONTROLLER_NAME1, CONTROLLER_NAME2, CONTROLLER_NAME3 };
-export const models = { MODEL_NAME1, MODEL_NAME2, MODEL_NAME3 };
+export const models = { Authenticate, Search, MODEL_NAME3 };
 export const views = { VIEW_NAME1, VIEW_NAME2, VIEW_NAME3 };
