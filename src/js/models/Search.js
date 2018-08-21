@@ -1,4 +1,4 @@
-import { SteamAPIKey } from '../config'
+import { SteamAPIKey, proxy } from '../config'
 import axios from 'axios'
 
 export default class Search {
@@ -10,7 +10,7 @@ export default class Search {
         let interfaceName = 'ISteamApps';
         let methodName = 'GetAppList';
         let versionName = '2';
-        const res = axios.get(`https://api.steampowered.com/${interfaceName}/${methodName}/v${versionName}/`)
+        const res = axios.get(`${proxy}https://api.steampowered.com/${interfaceName}/${methodName}/v${versionName}/`)
         .then( (response) => {
             console.log(response);
         })
