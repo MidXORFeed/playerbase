@@ -10,3 +10,4 @@ import VIEW_NAME3 from './views/VIEW_NAME3';
 export const controllers = { CONTROLLER_NAME1, CONTROLLER_NAME2, CONTROLLER_NAME3 };
 export const models = { Authenticate, Search, MODEL_NAME3 };
 export const views = { VIEW_NAME1, VIEW_NAME2, VIEW_NAME3 };
+export { elements } from './views/base';

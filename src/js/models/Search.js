@@ -1,6 +1,7 @@
 import { SteamAPIKey, proxy } from '../config'
 import axios from 'axios'
 
+
 export default class Search {
     constructor(appid) {
         this.appid = appid;
