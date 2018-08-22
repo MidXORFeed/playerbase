@@ -1,21 +1,23 @@
 import { elements, controllers, models, views } from './playerbase'
-import axios from 'axios'
-import { proxy } from './config'
+import { serverApi } from  './misc/serverApi'
 
-/*
 const state = {};
-state.Search = new models.Search();
-state.Search.getResults();
 
-window.state = state;
-*/
+if (!state.Authenticate) {
+    views.authenticateView.renderLoginBtn();
+}
+
+const api = new serverApi();
 
 elements.httpBtn.addEventListener('click', e => {
-    axios.get(`http://localhost:3000`)
-    .then( (response) => {
-        console.log(response);
-    })
-    .catch( (error) => {
-        console.log(error);
-    })
+    const resp = api.getUrl();
 });
+
+elements.response.addEventListener('click', e => {
+
+    if (e.target.closest('#sso-btn')) {
+        const resp = api.postTest()
+    }
+});
+
+window.state = state;
