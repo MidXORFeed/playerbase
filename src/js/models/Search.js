@@ -3,17 +3,16 @@ import axios from 'axios'
 
 
 export default class Search {
-    constructor(appid) {
-        this.appid = appid;
+    constructor(steamid) {
+        this.steamid = steamid;
     }
 
-    getResults() {
-    
+    /*
+    getPlayerSummaries() {
         let interfaceName = 'ISteamUser';
         let methodName = 'GetPlayerSummaries';
         let versionName = '2';
-        let steamids = 76561198034979625;
-        const res = axios.get(`https://api.steampowered.com/${interfaceName}/${methodName}/v${versionName}?key=${SteamAPIKey}&steamids=${steamids}`)
+        const res = axios.get(`https://api.steampowered.com/${interfaceName}/${methodName}/v${versionName}?key=${SteamAPIKey}&steamids=${this.steamid}`)
         .then( (response) => {
             console.log(response);
         })
@@ -21,28 +20,28 @@ export default class Search {
             console.log(error);
         });
     }
+    */
 
-    getOwnedGames() {
+   async getOwnedGames() {
         let interfaceName = 'IPlayerService';
         let methodName = 'GetOwnedGames';
         let versionName = '1';
-        let steamids = '76561198034979625';
         let include_appinfo = 1;
         let include_played_free_games = 1;
         let appids_filter = '';
-        const res = axios.get(`https://api.steampowered.com/${interfaceName}/${methodName}/v${versionName}/?key=${SteamAPIKey}&format=json&steamid=${steamids}&include_appinfo=${include_appinfo}&include_played_free_games=${include_played_free_games}&appids_filter=${appids_filter}`)
-        .then( (response) => {
-            console.log(response);
-        })
-        .catch( (error) => { 
+
+        try {
+            const res = await axios.get(`https://api.steampowered.com/${interfaceName}/${methodName}/v${versionName}/?key=${SteamAPIKey}&format=json&steamid=${this.steamid}&include_appinfo=${include_appinfo}&include_played_free_games=${include_played_free_games}&appids_filter=${appids_filter}`);
+            this.ownedGames = res.data.response.games;
+            console.log(res);
+        } catch (error) {
             console.log(error);
-        });
+        }
     }
 
     getInventoryData() {
         let appid = 570;
-        let steamids = '76561198034979625';
-        axios.get(`${proxy}http://steamcommunity.com/inventory/${steamids}/${appid}/2?l=english&count=5000`)
+        axios.get(`${proxy}http://steamcommunity.com/inventory/${this.steamid}/${appid}/2?l=english&count=5000`)
         .then( (response) => {
             console.log(response);
         })
