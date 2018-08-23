@@ -20,6 +20,7 @@ export class serverApi {
         const res = axios.post(`${this.URL}/auth/openid`)
         .then( (response) => {
             console.log(response);
+            elements.response.insertAdjacentHTML('beforeend', response.data);
         })
         .catch( (error) => {
             console.log(error);

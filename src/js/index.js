@@ -9,12 +9,16 @@ if (!state.Authenticate) {
 
 const api = new serverApi();
 
+state.Search = new models.Search();
+// state.Search.getResults();
+// state.Search.getInventoryData();
+// state.Search.getAssetPrices();
+
 elements.httpBtn.addEventListener('click', e => {
     const resp = api.getUrl();
 });
 
 elements.response.addEventListener('click', e => {
-
     if (e.target.closest('#sso-btn')) {
         const resp = api.postTest()
     }
