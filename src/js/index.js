@@ -3,25 +3,31 @@ import { serverApi } from  './misc/serverApi'
 
 const state = {};
 
-if (!state.Authenticate) {
-    views.authenticateView.renderLoginBtn();
-}
-
 const api = new serverApi();
 
-state.Search = new models.Search();
-// state.Search.getResults();
-// state.Search.getInventoryData();
-// state.Search.getAssetPrices();
-
-elements.httpBtn.addEventListener('click', e => {
-    const resp = api.getUrl();
+elements.searchBtn.addEventListener('click', e => {
+    searchSteamID();
 });
 
-elements.response.addEventListener('click', e => {
-    if (e.target.closest('#sso-btn')) {
-        const resp = api.postTest()
+const searchSteamID = async() => {
+    const steamID = views.searchView.getInput();
+    if (!state.Search) {
+        state.Search = new models.Search(steamID);
+        try {
+            await state.Search.getOwnedGames();
+            views.gameListView.renderGameList(state.Search.ownedGames);
+        } catch (error) {
+            console.log(error);
+        }
     }
-});
+
+    // 1. Get list of games owned by player
+
+    // 2. Render list of games owned by player
+
+    // state.Search.getPlayerSummaries()
+    // state.Search.getInventoryData();
+    // state.Search.getAssetPrices();
+}
 
 window.state = state;
