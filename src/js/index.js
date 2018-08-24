@@ -6,13 +6,14 @@ const state = {};
 const api = new serverApi();
 
 elements.searchBtn.addEventListener('click', e => {
-    searchSteamID();
+    const steamID = views.searchView.getInput();
+    searchSteamID(steamID);
 });
 
-const searchSteamID = async() => {
-    const steamID = views.searchView.getInput();
+const searchSteamID = async(steamID) => {
     if (!state.Search) {
         state.Search = new models.Search(steamID);
+
         try {
             await state.Search.getOwnedGames();
             views.gameListView.renderGameList(state.Search.ownedGames);
@@ -20,14 +21,23 @@ const searchSteamID = async() => {
             console.log(error);
         }
     }
+}
 
-    // 1. Get list of games owned by player
+elements.gameList.addEventListener('click', e => {
+    const gameAppID = e.target.closest('.game_listItem').id;
+    searchGameInventory(gameAppID);
+});
 
-    // 2. Render list of games owned by player
-
-    // state.Search.getPlayerSummaries()
-    // state.Search.getInventoryData();
-    // state.Search.getAssetPrices();
+const searchGameInventory = async(gameAppID) => {
+    try {
+        await state.Search.getInventoryData(gameAppID);
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 window.state = state;
+
+// state.Search.getPlayerSummaries()
+// state.Search.getInventoryData();
+// state.Search.getAssetPrices();
