@@ -7,47 +7,41 @@ export default class Search {
         this.steamid = steamid;
     }
 
-    /*
-    getPlayerSummaries() {
-        let interfaceName = 'ISteamUser';
-        let methodName = 'GetPlayerSummaries';
-        let versionName = '2';
-        const res = axios.get(`https://api.steampowered.com/${interfaceName}/${methodName}/v${versionName}?key=${SteamAPIKey}&steamids=${this.steamid}`)
-        .then( (response) => {
-            console.log(response);
-        })
-        .catch( (error) => { 
+    async getPlayerSummaries() {
+        const interfaceName = 'ISteamUser';
+        const methodName = 'GetPlayerSummaries';
+        const versionName = '2';
+        try {
+            const res = await axios.get(`https://api.steampowered.com/${interfaceName}/${methodName}/v${versionName}?key=${SteamAPIKey}&steamids=${this.steamid}`);
+            console.log(res);
+        } catch(error) { 
             console.log(error);
-        });
+        };
     }
-    */
 
-   async getOwnedGames() {
-        let interfaceName = 'IPlayerService';
-        let methodName = 'GetOwnedGames';
-        let versionName = '1';
+    async getOwnedGames() {
+        const interfaceName = 'IPlayerService';
+        const methodName = 'GetOwnedGames';
+        const versionName = '1';
         let include_appinfo = 1;
         let include_played_free_games = 1;
         let appids_filter = '';
-
         try {
             const res = await axios.get(`https://api.steampowered.com/${interfaceName}/${methodName}/v${versionName}/?key=${SteamAPIKey}&format=json&steamid=${this.steamid}&include_appinfo=${include_appinfo}&include_played_free_games=${include_played_free_games}&appids_filter=${appids_filter}`);
             this.ownedGames = res.data.response.games;
-            console.log(res);
         } catch (error) {
             console.log(error);
         }
     }
 
-    getInventoryData() {
-        let appid = 570;
-        axios.get(`${proxy}http://steamcommunity.com/inventory/${this.steamid}/${appid}/2?l=english&count=5000`)
-        .then( (response) => {
-            console.log(response);
-        })
-        .catch( (error) => { 
-            console.log(error);
-        });
+    async getInventoryData(appid) {
+        try {
+            const res = await axios.get(`${proxy}http://steamcommunity.com/inventory/${this.steamid}/${appid}/2?l=english&count=5000`);
+            this.inventoryData = res;
+            console.log(res);
+        } catch (error) {
+            console.log("Failed to retrieve inventory data for game");
+        }
     }
 
     getAssetPrices() {
