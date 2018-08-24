@@ -11,3 +11,4 @@ export const controllers = { CONTROLLER_NAME1, CONTROLLER_NAME2, CONTROLLER_NAME
 export const models = { Authenticate, Search, MODEL_NAME3 };
 export const views = { authenticateView, searchView, gameListView };
 export { elements } from './views/base';
+export { steamMarketApps } from './misc/steamMarketApps';
