@@ -29,6 +29,7 @@ export default class Search {
         try {
             const res = await axios.get(`https://api.steampowered.com/${interfaceName}/${methodName}/v${versionName}/?key=${SteamAPIKey}&format=json&steamid=${this.steamid}&include_appinfo=${include_appinfo}&include_played_free_games=${include_played_free_games}&appids_filter=${appids_filter}`);
             this.ownedGames = res.data.response.games;
+            return this.ownedGames;
         } catch (error) {
             console.log(error);
         }
@@ -37,8 +38,9 @@ export default class Search {
     async getInventoryData(appid) {
         try {
             const res = await axios.get(`${proxy}http://steamcommunity.com/inventory/${this.steamid}/${appid}/2?l=english&count=5000`);
-            this.inventoryData = res;
+            this.inventoryData = res.data.descriptions;
             console.log(res);
+            return this.inventoryData;
         } catch (error) {
             console.log("Failed to retrieve inventory data for game");
         }
