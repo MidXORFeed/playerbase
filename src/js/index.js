@@ -31,6 +31,7 @@ elements.gameList.addEventListener('click', e => {
 const searchGameInventory = async(gameAppID) => {
     try {
         await state.Search.getInventoryData(gameAppID);
+        views.gameInventoryListView.renderInventoryList(state.Search.inventoryData);
     } catch (error) {
         console.log(error);
     }
