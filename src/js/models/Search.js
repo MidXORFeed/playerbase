@@ -13,7 +13,6 @@ export default class Search {
         const versionName = '2';
         try {
             const res = await axios.get(`https://api.steampowered.com/${interfaceName}/${methodName}/v${versionName}?key=${SteamAPIKey}&steamids=${this.steamid}`);
-            console.log(res);
         } catch(error) { 
             console.log(error);
         };
@@ -33,32 +32,5 @@ export default class Search {
         } catch (error) {
             console.log(error);
         }
-    }
-
-    async getInventoryData(appid) {
-        try {
-            const res = await axios.get(`${proxy}http://steamcommunity.com/inventory/${this.steamid}/${appid}/2?l=english&count=5000`);
-            this.inventoryData = res.data.descriptions;
-            console.log(res);
-            return this.inventoryData;
-        } catch (error) {
-            console.log("Failed to retrieve inventory data for game");
-        }
-    }
-
-    getAssetPrices() {
-        let interfaceName = 'ISteamEconomy';
-        let methodName = 'GetAssetPrices';
-        let versionName = '1';
-        let appid = 570;
-        let currency = 'CAD';
-        let language = '';
-        axios.get(`https://api.steampowered.com/${interfaceName}/${methodName}/v${versionName}/?key=${SteamAPIKey}&format=json&appid=${appid}&currency=${currency}&language=${language}`)
-        .then( (response) => {
-            console.log(response);
-        })
-        .catch( (error) => { 
-            console.log(error);
-        });
     }
 }
