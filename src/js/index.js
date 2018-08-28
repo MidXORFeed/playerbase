@@ -24,15 +24,15 @@ const getOwnedSteamApps = async(steamID) => {
 
 elements.gameList.addEventListener('click', e => {
     const gameAppID = e.target.closest('.game_listItem').id;
-    getGameInventory(state.Search.steamid, gameAppID);
     getGameAssetPrices(gameAppID);
+    getGameInventory(state.Search.steamid, gameAppID);
 });    
 
 const getGameInventory = async(steamid, gameAppID) => {
     if (!state.Inventory[steamid + '_' + gameAppID]) { state.Inventory[steamid + '_' + gameAppID] = new models.Inventory() };
     try {
         await state.Inventory[steamid + '_' + gameAppID].getInventoryData(steamid, gameAppID);
-        views.gameInventoryListView.renderInventoryList(state.Inventory[steamid + '_' + gameAppID].inventoryData);
+        views.gameInventoryListView.renderInventoryList(state.Inventory[steamid + '_' + gameAppID].inventoryData, state.AssetPrice[gameAppID].assetPriceData);
     } catch (error) {
         console.log(error);
     }
