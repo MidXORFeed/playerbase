@@ -2,25 +2,12 @@ import { elements, controllers, models, views } from './playerbase'
 import { serverApi } from  './misc/serverApi'
 
 const state = {};
-state.Inventory = {};
 state.AssetPrice = {};
-
-const api = new serverApi();
 
 elements.searchBtn.addEventListener('click', e => {
     const steamID = views.searchView.getInput();
     getOwnedSteamApps(steamID);
 });
-
-const getOwnedSteamApps = async(steamID) => {
-    if (!state.Search) { state.Search = new models.Search(steamID) };
-    try {
-        await state.Search.getOwnedGames();
-        views.gameListView.renderGameList(state.Search.ownedGames);
-    } catch (error) {
-        console.log(error);
-    }
-}
 
 elements.gameList.addEventListener('click', e => {
     const gameAppID = e.target.closest('.game_listItem').id;
@@ -28,11 +15,31 @@ elements.gameList.addEventListener('click', e => {
     getGameInventory(state.Search.steamid, gameAppID);
 });    
 
-const getGameInventory = async(steamid, gameAppID) => {
-    if (!state.Inventory[steamid + '_' + gameAppID]) { state.Inventory[steamid + '_' + gameAppID] = new models.Inventory() };
+const getOwnedSteamApps = async(steamID) => {
+    if (!state.Search) { state.Search = new models.Search(steamID) };
+    
     try {
-        await state.Inventory[steamid + '_' + gameAppID].getInventoryData(steamid, gameAppID);
-        views.gameInventoryListView.renderInventoryList(state.Inventory[steamid + '_' + gameAppID].inventoryData, state.AssetPrice[gameAppID].assetPriceData);
+        const ownedGames = await state.Search.getOwnedGames(steamID); 
+        if (!state.Search.isSearched(steamID)) {
+            state.Search.addSearch(steamID, ownedGames);
+        }
+        views.gameListView.clearGamesList();
+        views.gameListView.renderGameList(ownedGames);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const getGameInventory = async(steamid, gameAppID) => {
+    if (!state.Inventory) { state.Inventory = new models.Inventory() };
+
+    try {
+        const inventory = await state.Inventory.getInventoryData(steamid, gameAppID);
+        if (!state.Inventory.isRetrieved(steamid, gameAppID)) {
+            state.Inventory.addInventory(steamid, gameAppID, inventory);
+        }
+        views.gameInventoryListView.clearGamesList();
+        views.gameInventoryListView.renderInventoryList(inventory, state.AssetPrice[gameAppID].assetPriceData);
     } catch (error) {
         console.log(error);
     }
