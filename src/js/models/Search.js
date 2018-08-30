@@ -17,6 +17,18 @@ export default class Search {
         return this.searches.findIndex(el => el === steamid) !== -1;
     }
     
+    sortOwnedGames(steamid) {
+        this.searches[steamid].sort( (a, b) => {
+            if (a.name.toUpperCase() < b.name.toUpperCase())
+                return -1;
+
+            if (a.name.toUpperCase() > b.name.toUpperCase())
+                return 1;
+
+            return 0;
+        });
+    }
+
     async getOwnedGames(steamid) {
         const interfaceName = 'IPlayerService';
         const methodName = 'GetOwnedGames';
