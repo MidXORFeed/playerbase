@@ -1,10 +1,34 @@
 import { elements } from '../playerbase'
 
-export const clearGamesList = () => {
+export const clearInventoryList = () => {
     elements.gameInventoryList.innerHTML = '';
 };
 
-export const renderInventoryList = (inventoryList, AssetPriceData) => {
+export const renderResults = (inventory, page = 1, resPerPage = 10) => {
+    // render results of currente page
+    const start = (page - 1) * resPerPage;
+    const end = page * resPerPage;
+
+    if (inventory !== undefined) {
+        renderItemHeader();
+        inventory.slice(start, end).forEach(renderItemRow);
+        renderButtons(page, inventory.length, resPerPage);
+    } else {
+        renderNoItemsFound();
+    }
+};
+
+// type: 'prev' or 'next'
+const createButton = (page, type) => `
+    <button class="btn-inline results__btn--${type}" data-goto=${type === 'prev' ? page - 1 : page + 1}>
+        <span>Page ${type === 'prev' ? page - 1 : page + 1}</span>
+        <svg class="search__icon">
+            <use href="img/icons.svg#icon-triangle-${type === 'prev' ? 'left' : 'right'}"></use>
+        </svg>
+    </button>
+`;
+
+const renderItemHeader = () => {
     const tableHeaderMarkup = 
     `
     <tr>
@@ -17,37 +41,49 @@ export const renderInventoryList = (inventoryList, AssetPriceData) => {
         <th>RETAIL</th>
     </tr>
     `;
-    let markup = tableHeaderMarkup;
+    elements.gameInventoryList.insertAdjacentHTML('afterbegin', tableHeaderMarkup);
+}
 
-    if (inventoryList) {
-        inventoryList.forEach(element => {
-            const icon_url = `https://steamcommunity-a.akamaihd.net/economy/image/${element.icon_url}`;
-            markup += 
-            `
-            <tr id="${element.appid}_${element.classid}">
-                <td><img src="${icon_url}" class="game_inventoryItem"></img></td>
-                <td>${element.name}</td>
-                <td>2</td>
-                <td>1.79</td>
-                <td>0.01</td>
-                <td>10.99</td>
-                <td>14.99</td>
-            </tr>
-            `
-            /* Display only items sold by Steam at retail Price (NOT COMMUNITY PRICE)
-            if (AssetPriceData[element.classid]) {
-                const icon_url = `https://steamcommunity-a.akamaihd.net/economy/image/${element.icon_url}`;
-                markup += 
-                `<li id="${element.appid}_${element.classid}">
-                    <img src="${icon_url}" class="game_inventoryItem"></img>
-                    <span>${element.name}</span>
-                    <span>${AssetPriceData[element.classid]}</span>
-                </li>`
-            }
-            */
-        });
+const renderNoItemsFound = () => {
+    const markup = `You have no steam items for this specific game!`;
+    elements.gameInventoryList.insertAdjacentHTML('afterbegin', markup);
+}
+
+const renderItemRow = element => {
+    const icon_url = `https://steamcommunity-a.akamaihd.net/economy/image/${element.icon_url}`;
+    const markup = `
+    <tr id="${element.appid}_${element.classid}">
+        <td><img src="${icon_url}" class="game_inventoryItem"></img></td>
+        <td>${element.name}</td>
+        <td>2</td>
+        <td>1.79</td>
+        <td>0.01</td>
+        <td>10.99</td>
+        <td>14.99</td>
+    </tr>
+    `;
+    elements.gameInventoryList.insertAdjacentHTML('beforeend', markup);
+};
+
+const renderButtons = (page, numResults, resPerPage) => {
+    const pages = Math.ceil(numResults / resPerPage);
+
+    let button;
+    if (page === 1 && pages > 1) {
+        // Only button to go to next page
+        button = createButton(page, 'next');
+    } else if (page < pages) {
+        // Both buttons
+        button = `
+            ${createButton(page, 'prev')}
+            ${createButton(page, 'next')}
+        `;
+    } else if (page === pages && pages > 1) {
+        // Only button to go to prev page
+        button = createButton(page, 'prev');
     } else {
-        markup = `You have no steam items for this specific game!`;
+        // Only 1 page of items, no need to render next page
+        return;
     }
-    elements.gameInventoryList.innerHTML = markup;
+    elements.gameInventoryList.insertAdjacentHTML('beforeend', button);
 };
