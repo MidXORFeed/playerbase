@@ -3,6 +3,9 @@ export const elements = {
     searchBtn: document.querySelector('.searchSteamID_btn'),
     gameList: document.querySelector('.game_list'),
     gameListItem: document.querySelector('.game_listItem'),
-    gameInventoryList: document.querySelector('.gameInventory_list'),
-    gameInventoryItem: document.querySelector('.game_inventoryItem')
+    gameInventoryList: document.querySelector('.game_inventoryList'),
+    gameInventoryItem: document.querySelector('.game_inventoryItem'),
+    display10btn: document.querySelector('.btn-display10'),
+    display50btn: document.querySelector('.btn-display50'),
+    display100btn: document.querySelector('.btn-display100')
 };
