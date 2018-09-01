@@ -18,15 +18,17 @@ export default class Search {
     }
     
     sortOwnedGames(steamid) {
-        this.searches[steamid].sort( (a, b) => {
-            if (a.name.toUpperCase() < b.name.toUpperCase())
-                return -1;
-
-            if (a.name.toUpperCase() > b.name.toUpperCase())
-                return 1;
-
-            return 0;
-        });
+        if (this.searches[steamid] !== undefined) {
+            this.searches[steamid].sort( (a, b) => {
+                if (a.name.toUpperCase() < b.name.toUpperCase())
+                    return -1;
+    
+                if (a.name.toUpperCase() > b.name.toUpperCase())
+                    return 1;
+    
+                return 0;
+            });
+        }
     }
 
     async getOwnedGames(steamid) {

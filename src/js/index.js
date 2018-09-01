@@ -7,6 +7,7 @@ state.AssetPrice = {};
 elements.searchBtn.addEventListener('click', e => {
     state.steamID = views.searchView.getInput();
     getOwnedSteamApps(state.steamID);
+    views.gameInventoryListView.clearInventoryList();
 });
 
 elements.gameList.addEventListener('click', e => {

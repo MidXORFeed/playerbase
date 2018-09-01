@@ -21,7 +21,6 @@ export default class Inventory {
                 const res = await axios.get(`${proxy}http://steamcommunity.com/inventory/${steamid}/${appid}/2?l=english&count=5000`);
                 return res.data.descriptions;
             } catch (error) {
-                console.log(error);
                 console.log("Failed to retrieve inventory data for game");
             }
         }
