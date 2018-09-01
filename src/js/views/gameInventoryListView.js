@@ -12,11 +12,26 @@ export const renderResults = (inventory, page = 1, resPerPage = 10) => {
     if (inventory !== undefined) {
         renderItemHeader();
         inventory.slice(start, end).forEach(renderItemRow);
-        renderButtons(page, inventory.length, resPerPage);
+        renderPaginationButtons(page, inventory.length, resPerPage);
     } else {
         renderNoItemsFound();
     }
 };
+
+export const renderDisplayQuantityButtons = (inventory) => {
+    let markup = ``;
+    if (inventory) {        
+        if (inventory.length > 50) {
+            markup += `<button class="btn btn-display10">Show 10</button>`;
+            markup += `<button class="btn btn-display50">Show 50</button>`;
+        }
+    
+        if (inventory.length > 100) {
+            markup += `<button class="btn btn-display100">Show 100</button>`;
+        }
+        elements.gameInventoryList.insertAdjacentHTML('afterbegin', markup);
+    }
+}
 
 // type: 'prev' or 'next'
 const createButton = (page, type) => `
@@ -32,7 +47,7 @@ const renderItemHeader = () => {
     const tableHeaderMarkup = 
     `
     <tr>
-        <th></th>
+        <th></th> 
         <th>NAME</th>
         <th>QUANTITY</th>
         <th>CURRENT</th>
@@ -65,7 +80,7 @@ const renderItemRow = element => {
     elements.gameInventoryList.insertAdjacentHTML('beforeend', markup);
 };
 
-const renderButtons = (page, numResults, resPerPage) => {
+const renderPaginationButtons = (page, numResults, resPerPage) => {
     const pages = Math.ceil(numResults / resPerPage);
 
     let button;

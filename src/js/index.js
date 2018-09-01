@@ -12,16 +12,25 @@ elements.searchBtn.addEventListener('click', e => {
 
 elements.gameList.addEventListener('click', e => {
     state.gameAppID = e.target.closest('.game_listItem').id;
+    state.displayNInventoryItems = 10;
     getGameAssetPrices(state.gameAppID);
     getGameInventory(state.Search.steamid, state.gameAppID);
 });    
 
 elements.gameInventoryList.addEventListener('click', e => {
-    const btn = e.target.closest('.btn-inline');
-    if (btn) {
+    if (e.target.closest('.btn-inline')) {
+        const btn = e.target.closest('.btn-inline');
         const goToPage = parseInt(btn.dataset.goto, 10);
-        views.gameInventoryListView.clearInventoryList();
-        views.gameInventoryListView.renderResults(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], goToPage);
+        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], goToPage, state.displayNInventoryItems);
+    } else if (e.target.closest('.btn-display10')) {
+        state.displayNInventoryItems = 10;
+        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], 1, state.displayNInventoryItems);
+    } else if (e.target.closest('.btn-display50')) {
+        state.displayNInventoryItems = 50;
+        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], 1, state.displayNInventoryItems);
+    } else if (e.target.closest('.btn-display100')) {
+        state.displayNInventoryItems = 100;
+        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], 1, state.displayNInventoryItems);
     }
 });
 
@@ -49,9 +58,7 @@ const getGameInventory = async(steamid, gameAppID) => {
         if (!state.Inventory.isRetrieved(steamid, gameAppID)) {
             state.Inventory.addInventory(steamid, gameAppID, inventory);
         }
-        views.gameInventoryListView.clearInventoryList();
-        views.gameInventoryListView.renderResults(inventory);
-        // views.gameInventoryListView.renderInventoryList(inventory, state.AssetPrice[gameAppID].assetPriceData);
+        displayNInventoryItems(inventory, 1, 10);
     } catch (error) {
         console.log(error);
     }
@@ -64,6 +71,12 @@ const getGameAssetPrices = async(gameAppID) => {
     } catch (error) {
         console.log(error);
     }
+}
+
+const displayNInventoryItems = (inventory, goToPage, resultsPerPage) => {
+    views.gameInventoryListView.clearInventoryList();
+    views.gameInventoryListView.renderResults(inventory, goToPage, resultsPerPage);
+    views.gameInventoryListView.renderDisplayQuantityButtons(inventory);
 }
 
 window.state = state;
