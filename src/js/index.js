@@ -31,6 +31,9 @@ elements.gameInventoryList.addEventListener('click', e => {
     } else if (e.target.closest('.btn-display100')) {
         state.displayNInventoryItems = 100;
         displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], 1, state.displayNInventoryItems);
+    } else if (e.target.closest('.btn-displayAll')) {
+        state.displayNInventoryItems = state.Inventory.inventories[state.steamID + '_' + state.gameAppID].length;
+        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], 1, state.displayNInventoryItems);
     }
 });
 

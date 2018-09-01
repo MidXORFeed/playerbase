@@ -29,6 +29,11 @@ export const renderDisplayQuantityButtons = (inventory) => {
         if (inventory.length > 100) {
             markup += `<button class="btn btn-display100">Show 100</button>`;
         }
+
+        if (inventory.length > 10) {
+            markup += `<button class="btn btn-displayAll">Show All</button>`;
+        }
+
         elements.gameInventoryList.insertAdjacentHTML('afterbegin', markup);
     }
 }
