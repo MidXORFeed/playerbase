@@ -13,4 +13,4 @@ export const controllers = { CONTROLLER_NAME1, CONTROLLER_NAME2, CONTROLLER_NAME
 export const models = { Authenticate, Search, Inventory, AssetPrice };
 export const views = { authenticateView, searchView, gameListView, gameInventoryListView };
 export { elements } from './views/base';
-export { steamMarketApps } from './misc/steamMarketApps';
+export { bitskinsMarketApps } from './misc/bitskinsMarketApps';
