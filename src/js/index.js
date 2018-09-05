@@ -2,7 +2,6 @@ import { elements, controllers, models, views } from './playerbase'
 import { serverApi } from  './misc/serverApi'
 
 const state = {};
-state.AssetPrice = {};
 
 elements.searchBtn.addEventListener('click', e => {
     state.steamID = views.searchView.getInput();
@@ -21,19 +20,19 @@ elements.gameInventoryList.addEventListener('click', e => {
     if (e.target.closest('.btn-inline')) {
         const btn = e.target.closest('.btn-inline');
         const goToPage = parseInt(btn.dataset.goto, 10);
-        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], goToPage, state.displayNInventoryItems);
+        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.assetPrices[state.gameAppID], goToPage, state.displayNInventoryItems);
     } else if (e.target.closest('.btn-display10')) {
         state.displayNInventoryItems = 10;
-        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], 1, state.displayNInventoryItems);
+        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.assetPrices[state.gameAppID], 1, state.displayNInventoryItems);
     } else if (e.target.closest('.btn-display50')) {
         state.displayNInventoryItems = 50;
-        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], 1, state.displayNInventoryItems);
+        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.assetPrices[state.gameAppID], 1, state.displayNInventoryItems);
     } else if (e.target.closest('.btn-display100')) {
         state.displayNInventoryItems = 100;
-        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], 1, state.displayNInventoryItems);
+        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.assetPrices[state.gameAppID], 1, state.displayNInventoryItems);
     } else if (e.target.closest('.btn-displayAll')) {
         state.displayNInventoryItems = state.Inventory.inventories[state.steamID + '_' + state.gameAppID].length;
-        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], 1, state.displayNInventoryItems);
+        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.assetPrices[state.gameAppID], 1, state.displayNInventoryItems);
     }
 });
 
@@ -61,29 +60,28 @@ const getGameInventory = async(steamid, gameAppID) => {
         if (!state.Inventory.isRetrieved(steamid, gameAppID)) {
             state.Inventory.addInventory(steamid, gameAppID, inventory);
         }
-        displayNInventoryItems(inventory, 1, 10);
+        displayNInventoryItems(inventory, state.AssetPrice.assetPrices[gameAppID], 1, 10);
     } catch (error) {
         console.log(error);
     }
 }
 
 const getGameAssetPrices = async(gameAppID) => {
-    if (!state.AssetPrice[gameAppID]) { state.AssetPrice[gameAppID] = new models.AssetPrice(gameAppID) };
+    if (!state.AssetPrice) { state.AssetPrice = new models.AssetPrice() };
     try {
-        await state.AssetPrice[gameAppID].getAssetPrices();
+        const assetPrice = await state.AssetPrice.getAssetPrices(gameAppID);
+        if (!state.AssetPrice.isRetrieved(gameAppID)) {
+            state.AssetPrice.addAssetPrices(gameAppID, assetPrice);
+        }
     } catch (error) {
         console.log(error);
     }
 }
 
-const displayNInventoryItems = (inventory, goToPage, resultsPerPage) => {
+const displayNInventoryItems = (inventory, gameAssetPrices, goToPage, resultsPerPage) => {
     views.gameInventoryListView.clearInventoryList();
-    views.gameInventoryListView.renderResults(inventory, goToPage, resultsPerPage);
+    views.gameInventoryListView.renderResults(inventory, gameAssetPrices, goToPage, resultsPerPage);
     views.gameInventoryListView.renderDisplayQuantityButtons(inventory);
 }
 
 window.state = state;
-
-// state.Search.getPlayerSummaries()
-// state.Search.getInventoryData();
-// state.Search.getAssetPrices();
