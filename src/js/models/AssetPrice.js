@@ -1,26 +1,37 @@
-import { SteamAPIKey, proxy } from '../config'
+import totp from 'notp'
+import base32 from 'thirty-two'
+import { SteamAPIKey, BitSkinsAPIKey, BitSkinsSecret, proxy } from '../config'
 import axios from 'axios'
 
 export default class AssetPrice {
-    constructor(appid) {
-        this.appid = appid;
+    constructor() {
+        this.assetPrices = {};
     }
 
-    async getAssetPrices() {
-        const interfaceName = 'ISteamEconomy';
-        const methodName = 'GetAssetPrices';
-        const versionName = '1';
-        let currency = 'CAD';
-        let language = '';
-        try {
-            if (!this.assetPriceData) { this.assetPriceData = {} };
-            const res = await axios.get(`https://api.steampowered.com/${interfaceName}/${methodName}/v${versionName}/?key=${SteamAPIKey}&format=json&appid=${this.appid}&currency=${currency}&language=${language}`);
-            res.data.result.assets.forEach(element => {
-                this.assetPriceData[element.classid] = element.prices[currency]
+    addAssetPrices(gameAppID, assetPrices) {
+        if (!this.assetPrices[gameAppID]) {
+            this.assetPrices[gameAppID] = {};
+            assetPrices.forEach(element => {
+                this.assetPrices[gameAppID][element.market_hash_name] = element.price
             });
-            return this.assetPriceData;
-        } catch (error) {
-            console.log(error);
         }
+    }
+
+    isRetrieved(gameAppID) {
+        return this.assetPrices[gameAppID] !== undefined;
+    }
+
+    async getAssetPrices(appid) {
+        let authToken = totp.totp.gen(base32.decode(`${BitSkinsSecret}`));
+        const versionName = '1';
+        if (!this.assetPrices[appid]) { 
+            try {
+                const res = await axios.post(`https://bitskins.com/api/v${versionName}/get_all_item_prices/?api_key=${BitSkinsAPIKey}&app_id=${appid}&code=${authToken}`);
+                return res.data.prices;
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        return this.assetPrices[appid];
     }
 }
