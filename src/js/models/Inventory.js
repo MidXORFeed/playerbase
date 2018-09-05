@@ -1,4 +1,6 @@
-import { SteamAPIKey, proxy } from '../config'
+import totp from 'notp'
+import base32 from 'thirty-two'
+import { SteamAPIKey, BitSkinsAPIKey, BitSkinsSecret, proxy } from '../config'
 import axios from 'axios'
 
 export default class Inventory {
@@ -16,10 +18,11 @@ export default class Inventory {
     }
 
     async getInventoryData(steamid, appid) {
+        let authToken = totp.totp.gen(base32.decode(`${BitSkinsSecret}`));
         if (!this.inventories[steamid + '_' + appid]) {
             try {
-                const res = await axios.get(`${proxy}http://steamcommunity.com/inventory/${steamid}/${appid}/2?l=english&count=5000`);
-                return res.data.descriptions;
+                const res = await axios.post(`https://bitskins.com/api/v1/get_my_inventory/?api_key=${BitSkinsAPIKey}&page=1&app_id=${appid}&code=${authToken}`);
+                return res.data.data.steam_inventory.items;
             } catch (error) {
                 console.log("Failed to retrieve inventory data for game");
             }
