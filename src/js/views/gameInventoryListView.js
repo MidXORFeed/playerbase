@@ -4,14 +4,14 @@ export const clearInventoryList = () => {
     elements.gameInventoryList.innerHTML = '';
 };
 
-export const renderResults = (inventory, page = 1, resPerPage = 10) => {
+export const renderResults = (inventory, gameAssetPrices, page = 1, resPerPage = 10) => {
     // render results of currente page
     const start = (page - 1) * resPerPage;
     const end = page * resPerPage;
 
     if (inventory !== undefined) {
         renderItemHeader();
-        inventory.slice(start, end).forEach(renderItemRow);
+        inventory.slice(start, end).forEach( element => { renderItemRow(element, gameAssetPrices[element.market_hash_name]) });
         renderPaginationButtons(page, inventory.length, resPerPage);
     } else {
         renderNoItemsFound();
@@ -56,9 +56,6 @@ const renderItemHeader = () => {
         <th>NAME</th>
         <th>QUANTITY</th>
         <th>CURRENT</th>
-        <th>LOW</th>
-        <th>HIGH</th>
-        <th>RETAIL</th>
     </tr>
     `;
     elements.gameInventoryList.insertAdjacentHTML('afterbegin', tableHeaderMarkup);
@@ -69,17 +66,13 @@ const renderNoItemsFound = () => {
     elements.gameInventoryList.insertAdjacentHTML('afterbegin', markup);
 }
 
-const renderItemRow = element => {
-    const icon_url = `https://steamcommunity-a.akamaihd.net/economy/image/${element.icon_url}`;
+const renderItemRow = (element, price) => {
     const markup = `
     <tr id="${element.appid}_${element.classid}">
-        <td><img src="${icon_url}" class="game_inventoryItem"></img></td>
-        <td>${element.name}</td>
-        <td>2</td>
-        <td>1.79</td>
-        <td>0.01</td>
-        <td>10.99</td>
-        <td>14.99</td>
+        <td><img src="${element.image}" class="game_inventoryItem"></img></td>
+        <td>${element.market_hash_name}</td>
+        <td>${element.number_of_items}</td>
+        <td>${price !== undefined ? '$ ' + price : '---'}</td>
     </tr>
     `;
     elements.gameInventoryList.insertAdjacentHTML('beforeend', markup);
