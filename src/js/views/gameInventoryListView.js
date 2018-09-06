@@ -4,14 +4,14 @@ export const clearInventoryList = () => {
     elements.gameInventoryList.innerHTML = '';
 };
 
-export const renderResults = (inventory, gameAssetPrices, page = 1, resPerPage = 10) => {
+export const renderResults = (inventory, allItemPrices, priceDataForItemsOnSale, page = 1, resPerPage = 10) => {
     // render results of currente page
     const start = (page - 1) * resPerPage;
     const end = page * resPerPage;
-
+    
     if (inventory !== undefined) {
-        renderItemHeader();
-        inventory.slice(start, end).forEach( element => { renderItemRow(element, gameAssetPrices[element.market_hash_name]) });
+        renderInventoryTableHeader();
+        inventory.slice(start, end).forEach( item => { renderItemRow(item, allItemPrices[item.market_hash_name], priceDataForItemsOnSale[item.market_hash_name]) });
         renderPaginationButtons(page, inventory.length, resPerPage);
     } else {
         renderNoItemsFound();
@@ -48,14 +48,17 @@ const createButton = (page, type) => `
     </button>
 `;
 
-const renderItemHeader = () => {
+const renderInventoryTableHeader = () => {
     const tableHeaderMarkup = 
     `
     <tr>
         <th></th> 
         <th>NAME</th>
+        <th>RARITY</th>
         <th>QUANTITY</th>
+        <th>LOW</th>
         <th>CURRENT</th>
+        <th>SUGGESTED</th>
     </tr>
     `;
     elements.gameInventoryList.insertAdjacentHTML('afterbegin', tableHeaderMarkup);
@@ -66,13 +69,16 @@ const renderNoItemsFound = () => {
     elements.gameInventoryList.insertAdjacentHTML('afterbegin', markup);
 }
 
-const renderItemRow = (element, price) => {
+const renderItemRow = (inventoryItem, itemPrice, priceData) => {
     const markup = `
-    <tr id="${element.appid}_${element.classid}">
-        <td><img src="${element.image}" class="game_inventoryItem"></img></td>
-        <td>${element.market_hash_name}</td>
-        <td>${element.number_of_items}</td>
-        <td>${price !== undefined ? '$ ' + price : '---'}</td>
+    <tr id="${inventoryItem.app_id}_${inventoryItem.class_id}">
+        <td><img src="${inventoryItem.image}" class="game_inventoryItem" style="border-color: #${itemPrice !== undefined && itemPrice.name_color !== undefined ? itemPrice.name_color : ''}"></img></td>
+        <td style="color: #${itemPrice !== undefined && itemPrice.name_color !== undefined ? itemPrice.name_color : ''} ">${inventoryItem.market_hash_name}</td>
+        <td style="color: #${itemPrice !== undefined && itemPrice.rarity_color !== undefined ? itemPrice.rarity_color : ''} ">${inventoryItem !== undefined && inventoryItem.item_rarity !== null ? inventoryItem.item_rarity : '---' }</td>
+        <td>${inventoryItem.number_of_items}</td>
+        <td>${priceData !== undefined && priceData.lowest_price !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(priceData.lowest_price) : '---' }</td>
+        <td>${itemPrice !== undefined && itemPrice.current_price !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(itemPrice.current_price) : '---' }</td>
+        <td>${priceData !== undefined && priceData.highest_price !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(inventoryItem.suggested_price) : '---' }</td>
     </tr>
     `;
     elements.gameInventoryList.insertAdjacentHTML('beforeend', markup);
