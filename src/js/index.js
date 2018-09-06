@@ -9,30 +9,36 @@ elements.searchBtn.addEventListener('click', e => {
     views.gameInventoryListView.clearInventoryList();
 });
 
-elements.gameList.addEventListener('click', e => {
+elements.gameList.addEventListener('click', async(e) => {
     state.gameAppID = e.target.closest('.game_listItem').id;
     state.displayNInventoryItems = 10;
-    getGameAssetPrices(state.gameAppID);
-    getGameInventory(state.Search.steamid, state.gameAppID);
+
+    try {
+        await getGameAssetPrices(state.gameAppID);
+        await getGameInventory(state.Search.steamid, state.gameAppID);
+        displayNInventoryItems(state.Inventory.inventories[state.Search.steamid + '_' + state.gameAppID], state.AssetPrice.allItemPrices[state.gameAppID], state.AssetPrice.priceDataForItemsOnSale[state.gameAppID], 1, state.displayNInventoryItems);
+    } catch (error) {
+        console.log(error);
+    }
 });    
 
 elements.gameInventoryList.addEventListener('click', e => {
     if (e.target.closest('.btn-inline')) {
         const btn = e.target.closest('.btn-inline');
         const goToPage = parseInt(btn.dataset.goto, 10);
-        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.assetPrices[state.gameAppID], goToPage, state.displayNInventoryItems);
+        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.allItemPrices[state.gameAppID], state.AssetPrice.priceDataForItemsOnSale[state.gameAppID], goToPage, state.displayNInventoryItems);
     } else if (e.target.closest('.btn-display10')) {
         state.displayNInventoryItems = 10;
-        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.assetPrices[state.gameAppID], 1, state.displayNInventoryItems);
+        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.allItemPrices[state.gameAppID], state.AssetPrice.priceDataForItemsOnSale[state.gameAppID], 1, state.displayNInventoryItems);
     } else if (e.target.closest('.btn-display50')) {
         state.displayNInventoryItems = 50;
-        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.assetPrices[state.gameAppID], 1, state.displayNInventoryItems);
+        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.allItemPrices[state.gameAppID], state.AssetPrice.priceDataForItemsOnSale[state.gameAppID], 1, state.displayNInventoryItems);
     } else if (e.target.closest('.btn-display100')) {
         state.displayNInventoryItems = 100;
-        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.assetPrices[state.gameAppID], 1, state.displayNInventoryItems);
+        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.allItemPrices[state.gameAppID], state.AssetPrice.priceDataForItemsOnSale[state.gameAppID], 1, state.displayNInventoryItems);
     } else if (e.target.closest('.btn-displayAll')) {
         state.displayNInventoryItems = state.Inventory.inventories[state.steamID + '_' + state.gameAppID].length;
-        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.assetPrices[state.gameAppID], 1, state.displayNInventoryItems);
+        displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.allItemPrices[state.gameAppID], state.AssetPrice.priceDataForItemsOnSale[state.gameAppID], 1, state.displayNInventoryItems);
     }
 });
 
@@ -60,7 +66,6 @@ const getGameInventory = async(steamid, gameAppID) => {
         if (!state.Inventory.isRetrieved(steamid, gameAppID)) {
             state.Inventory.addInventory(steamid, gameAppID, inventory);
         }
-        displayNInventoryItems(inventory, state.AssetPrice.assetPrices[gameAppID], 1, 10);
     } catch (error) {
         console.log(error);
     }
@@ -69,18 +74,27 @@ const getGameInventory = async(steamid, gameAppID) => {
 const getGameAssetPrices = async(gameAppID) => {
     if (!state.AssetPrice) { state.AssetPrice = new models.AssetPrice() };
     try {
-        const assetPrice = await state.AssetPrice.getAssetPrices(gameAppID);
-        if (!state.AssetPrice.isRetrieved(gameAppID)) {
-            state.AssetPrice.addAssetPrices(gameAppID, assetPrice);
+        const allItemPrices = await state.AssetPrice.getAllItemPrices(gameAppID);
+        if (!state.AssetPrice.isAllItemPricesRetrieved(gameAppID)) {
+            state.AssetPrice.addAllItemPrices(gameAppID, allItemPrices);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    try {
+        const priceDataForItemsOnSale = await state.AssetPrice.getPriceDataForItemsOnSale(gameAppID);
+        if (!state.AssetPrice.isPriceDataForItemsOnSaleRetrieved(gameAppID)) {
+            state.AssetPrice.addPriceDataForItemsOnSale(gameAppID, priceDataForItemsOnSale);
         }
     } catch (error) {
         console.log(error);
     }
 }
 
-const displayNInventoryItems = (inventory, gameAssetPrices, goToPage, resultsPerPage) => {
+const displayNInventoryItems = (inventory, allItemPrices, priceDataForItemsOnSale, goToPage, resultsPerPage) => {
     views.gameInventoryListView.clearInventoryList();
-    views.gameInventoryListView.renderResults(inventory, gameAssetPrices, goToPage, resultsPerPage);
+    views.gameInventoryListView.renderResults(inventory, allItemPrices, priceDataForItemsOnSale, goToPage, resultsPerPage);
     views.gameInventoryListView.renderDisplayQuantityButtons(inventory);
 }
 
