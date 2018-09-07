@@ -14,11 +14,14 @@ elements.gameList.addEventListener('click', async(e) => {
     state.displayNInventoryItems = 10;
 
     try {
-        await getGameAssetPrices(state.gameAppID);
-        await getGameInventory(state.Search.steamid, state.gameAppID);
-        displayNInventoryItems(state.Inventory.inventories[state.Search.steamid + '_' + state.gameAppID], state.AssetPrice.allItemPrices[state.gameAppID], state.AssetPrice.priceDataForItemsOnSale[state.gameAppID], 1, state.displayNInventoryItems);
+        const gameAssetPricesPromise = getGameAssetPrices(state.gameAppID);
+        const gameInventoryPromise = getGameInventory(state.Search.steamid, state.gameAppID);
+        await gameAssetPricesPromise;
+        await gameInventoryPromise;
     } catch (error) {
         console.log(error);
+    } finally {
+        displayNInventoryItems(state.Inventory.inventories[state.Search.steamid + '_' + state.gameAppID], state.AssetPrice.allItemPrices[state.gameAppID], state.AssetPrice.priceDataForItemsOnSale[state.gameAppID], 1, state.displayNInventoryItems);
     }
 });    
 
@@ -44,7 +47,6 @@ elements.gameInventoryList.addEventListener('click', e => {
 
 const getOwnedSteamApps = async(steamID) => {
     if (!state.Search) { state.Search = new models.Search(steamID) };
-    
     try {
         const ownedGames = await state.Search.getOwnedGames(steamID); 
         if (!state.Search.isSearched(steamID)) {
@@ -60,7 +62,6 @@ const getOwnedSteamApps = async(steamID) => {
 
 const getGameInventory = async(steamid, gameAppID) => {
     if (!state.Inventory) { state.Inventory = new models.Inventory() };
-
     try {
         const inventory = await state.Inventory.getInventoryData(steamid, gameAppID);
         if (!state.Inventory.isRetrieved(steamid, gameAppID)) {
