@@ -78,7 +78,7 @@ const renderItemRow = (inventoryItem, itemPrice, priceData) => {
         <td>${inventoryItem.number_of_items}</td>
         <td>${priceData !== undefined && priceData.lowest_price !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(priceData.lowest_price) : '---' }</td>
         <td>${itemPrice !== undefined && itemPrice.current_price !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(itemPrice.current_price) : '---' }</td>
-        <td>${priceData !== undefined && priceData.highest_price !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(inventoryItem.suggested_price) : '---' }</td>
+        <td>${inventoryItem !== undefined && inventoryItem.suggested_price !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(inventoryItem.suggested_price) : '---' }</td>
     </tr>
     `;
     elements.gameInventoryList.insertAdjacentHTML('beforeend', markup);
