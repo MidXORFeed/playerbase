@@ -19,9 +19,11 @@ export default class Inventory {
 
     async getInventoryData(steamid, appid) {
         let authToken = totp.totp.gen(base32.decode(`${BitSkinsSecret}`));
+        const methodName = 'get_my_inventory';
+        const versionName = '1';
         if (!this.inventories[steamid + '_' + appid]) {
             try {
-                const res = await axios.post(`https://bitskins.com/api/v1/get_my_inventory/?api_key=${BitSkinsAPIKey}&page=1&app_id=${appid}&code=${authToken}`);
+                const res = await axios.post(`https://bitskins.com/api/v${versionName}/${methodName}/?api_key=${BitSkinsAPIKey}&page=1&app_id=${appid}&code=${authToken}`);
                 return res.data.data.steam_inventory.items;
             } catch (error) {
                 console.log("Failed to retrieve inventory data for game");
