@@ -12,6 +12,7 @@ export const renderResults = (inventory, allItemPrices, priceDataForItemsOnSale,
     if (inventory !== undefined) {
         renderInventoryTableHeader();
         inventory.slice(start, end).forEach( item => { renderItemRow(item, allItemPrices[item.market_hash_name], priceDataForItemsOnSale[item.market_hash_name]) });
+        renderTotalInventoryValues(inventory.totals);
         renderPaginationButtons(page, inventory.length, resPerPage);
     } else {
         renderNoItemsFound();
@@ -36,6 +37,22 @@ export const renderDisplayQuantityButtons = (inventory) => {
 
         elements.gameInventoryList.insertAdjacentHTML('afterbegin', markup);
     }
+}
+
+const renderTotalInventoryValues = (inventoryTotals) => {
+    const tableFooterMarkup = 
+    `
+    <tr>
+        <td></th> 
+        <td></th>
+        <td></th>
+        <td></th>
+        <td>${inventoryTotals !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(inventoryTotals.lowTotal) : '---' }</th>
+        <td>${inventoryTotals !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(inventoryTotals.currentTotal) : '---' }</th>
+        <td>${inventoryTotals !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(inventoryTotals.suggestedTotal) : '---' }</th>
+    </tr>
+    `;
+    elements.gameInventoryList.insertAdjacentHTML('beforeend', tableFooterMarkup);
 }
 
 // type: 'prev' or 'next'
