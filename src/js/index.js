@@ -21,6 +21,7 @@ elements.gameList.addEventListener('click', async(e) => {
     } catch (error) {
         console.log(error);
     } finally {
+        state.Inventory.setInventoryValue(state.Search.steamid, state.gameAppID, state.AssetPrice);
         displayNInventoryItems(state.Inventory.inventories[state.Search.steamid + '_' + state.gameAppID], state.AssetPrice.allItemPrices[state.gameAppID], state.AssetPrice.priceDataForItemsOnSale[state.gameAppID], 1, state.displayNInventoryItems);
     }
 });    
