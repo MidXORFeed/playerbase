@@ -43,10 +43,10 @@ const renderTotalInventoryValues = (inventoryTotals) => {
     const tableFooterMarkup = 
     `
     <tr>
-        <td></th> 
-        <td></th>
-        <td></th>
-        <td></th>
+        <td></td> 
+        <td></td>
+        <td></td>
+        <td>TOTAL VALUES</td>
         <td>${inventoryTotals !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(inventoryTotals.lowTotal) : '---' }</th>
         <td>${inventoryTotals !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(inventoryTotals.currentTotal) : '---' }</th>
         <td>${inventoryTotals !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(inventoryTotals.suggestedTotal) : '---' }</th>
