@@ -76,19 +76,22 @@ const getGameInventory = async(steamid, gameAppID) => {
 const getGameAssetPrices = async(gameAppID) => {
     if (!state.AssetPrice) { state.AssetPrice = new models.AssetPrice() };
     try {
-        const allItemPrices = await state.AssetPrice.getAllItemPrices(gameAppID);
-        if (!state.AssetPrice.isAllItemPricesRetrieved(gameAppID)) {
-            state.AssetPrice.addAllItemPrices(gameAppID, allItemPrices);
-        }
-    } catch (error) {
-        console.log(error);
-    }
-
-    try {
-        const priceDataForItemsOnSale = await state.AssetPrice.getPriceDataForItemsOnSale(gameAppID);
-        if (!state.AssetPrice.isPriceDataForItemsOnSaleRetrieved(gameAppID)) {
-            state.AssetPrice.addPriceDataForItemsOnSale(gameAppID, priceDataForItemsOnSale);
-        }
+        const allItemPrices = state.AssetPrice.getAllItemPrices(gameAppID);
+        const priceDataForItemsOnSale = state.AssetPrice.getPriceDataForItemsOnSale(gameAppID);
+        await allItemPrices
+        .then( (res) => {
+            console.log('allItemPrices being handled');
+            if (!state.AssetPrice.isAllItemPricesRetrieved(gameAppID)) {
+                state.AssetPrice.addAllItemPrices(gameAppID, res);
+            }
+        });
+        await priceDataForItemsOnSale
+        .then( (res) => {
+            console.log('priceDataForItemsOnSale being handled');
+            if (!state.AssetPrice.isPriceDataForItemsOnSaleRetrieved(gameAppID)) {
+                state.AssetPrice.addPriceDataForItemsOnSale(gameAppID, res);
+            }
+        });
     } catch (error) {
         console.log(error);
     }
