@@ -43,6 +43,9 @@ elements.gameInventoryList.addEventListener('click', e => {
     } else if (e.target.closest('.btn-displayAll')) {
         state.displayNInventoryItems = state.Inventory.inventories[state.steamID + '_' + state.gameAppID].length;
         displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.allItemPrices[state.gameAppID], state.AssetPrice.priceDataForItemsOnSale[state.gameAppID], 1, state.displayNInventoryItems);
+    } else if (e.target.closest('.inventory__item-showmore')) {
+        const marketHashName = e.target.parentElement.id;
+        addRecentItemSalesInfo(state.gameAppID, marketHashName);
     }
 });
 
@@ -80,18 +83,28 @@ const getGameAssetPrices = async(gameAppID) => {
         const priceDataForItemsOnSale = state.AssetPrice.getPriceDataForItemsOnSale(gameAppID);
         await allItemPrices
         .then( (res) => {
-            console.log('allItemPrices being handled');
             if (!state.AssetPrice.isAllItemPricesRetrieved(gameAppID)) {
                 state.AssetPrice.addAllItemPrices(gameAppID, res);
             }
         });
         await priceDataForItemsOnSale
         .then( (res) => {
-            console.log('priceDataForItemsOnSale being handled');
             if (!state.AssetPrice.isPriceDataForItemsOnSaleRetrieved(gameAppID)) {
                 state.AssetPrice.addPriceDataForItemsOnSale(gameAppID, res);
             }
         });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const addRecentItemSalesInfo = async(gameAppID, marketHashName) => {
+    if (!state.AssetPrice) { state.AssetPrice = new models.AssetPrice() };
+    try {
+        const recentItemSalesInfo = await state.AssetPrice.getRecentSalesInfo(marketHashName, gameAppID);
+        if (!state.AssetPrice.isRecentItemSalesInfoRetrieved(marketHashName, gameAppID)) {
+            state.AssetPrice.addRecentSalesInfo(gameAppID, marketHashName, recentItemSalesInfo);
+        }
     } catch (error) {
         console.log(error);
     }
@@ -102,5 +115,7 @@ const displayNInventoryItems = (inventory, allItemPrices, priceDataForItemsOnSal
     views.gameInventoryListView.renderResults(inventory, allItemPrices, priceDataForItemsOnSale, goToPage, resultsPerPage);
     views.gameInventoryListView.renderDisplayQuantityButtons(inventory);
 }
+
+
 
 window.state = state;
