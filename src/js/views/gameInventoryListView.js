@@ -1,4 +1,5 @@
 import { elements } from '../playerbase'
+import Chart from 'chart.js'
 
 export const clearInventoryList = () => {
     elements.gameInventoryList.innerHTML = '';
@@ -96,6 +97,9 @@ const renderItemRow = (inventoryItem, itemPrice, priceData) => {
         <td>${priceData !== undefined && priceData.lowest_price !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(priceData.lowest_price) : '---' }</td>
         <td>${itemPrice !== undefined && itemPrice.current_price !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(itemPrice.current_price) : '---' }</td>
         <td>${inventoryItem !== undefined && inventoryItem.suggested_price !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(inventoryItem.suggested_price) : '---' }</td>
+        <tr id="${inventoryItem.market_hash_name}" class="inventory__item inventory__item-showmore" colspan="8">
+            <td colspan="8">SHOW MORE INFO</td>
+        </tr>
     </tr>
     `;
     elements.gameInventoryList.insertAdjacentHTML('beforeend', markup);
