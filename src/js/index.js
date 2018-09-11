@@ -26,7 +26,7 @@ elements.gameList.addEventListener('click', async(e) => {
     }
 });    
 
-elements.gameInventoryList.addEventListener('click', e => {
+elements.gameInventoryList.addEventListener('click', async(e) => {
     if (e.target.closest('.btn-inline')) {
         const btn = e.target.closest('.btn-inline');
         const goToPage = parseInt(btn.dataset.goto, 10);
@@ -45,7 +45,8 @@ elements.gameInventoryList.addEventListener('click', e => {
         displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.allItemPrices[state.gameAppID], state.AssetPrice.priceDataForItemsOnSale[state.gameAppID], 1, state.displayNInventoryItems);
     } else if (e.target.closest('.inventory__item-showmore')) {
         const marketHashName = e.target.parentElement.id;
-        addRecentItemSalesInfo(state.gameAppID, marketHashName);
+        await addRecentItemSalesInfo(state.gameAppID, marketHashName);
+        displayRecentItemSalesInfo(marketHashName, state.AssetPrice.recentItemSalesInfo[state.gameAppID][marketHashName]);
     }
 });
 
@@ -116,6 +117,8 @@ const displayNInventoryItems = (inventory, allItemPrices, priceDataForItemsOnSal
     views.gameInventoryListView.renderDisplayQuantityButtons(inventory);
 }
 
-
+const displayRecentItemSalesInfo = (marketHashName, recentItemSalesInfo) => {
+    views.gameInventoryListView.renderRecentItemSalesInfoChart(marketHashName, recentItemSalesInfo);
+}
 
 window.state = state;
