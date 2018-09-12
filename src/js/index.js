@@ -44,9 +44,16 @@ elements.gameInventoryList.addEventListener('click', async(e) => {
         state.displayNInventoryItems = state.Inventory.inventories[state.steamID + '_' + state.gameAppID].length;
         displayNInventoryItems(state.Inventory.inventories[state.steamID + '_' + state.gameAppID], state.AssetPrice.allItemPrices[state.gameAppID], state.AssetPrice.priceDataForItemsOnSale[state.gameAppID], 1, state.displayNInventoryItems);
     } else if (e.target.closest('.inventory__item-showmore')) {
+        if (!state.Graphs) { state.Graphs = new models.Graphs() };
+        const marketHashName = e.target.parentElement.parentElement.id;
+        state.Graphs.removeItemSalesGraph(state.gameAppID, marketHashName);
+        toggleRecentItemSalesInfo(marketHashName, state.AssetPrice.recentItemSalesInfo[state.gameAppID][marketHashName]);
+    } else if (e.target.closest('.inventory__item-showless')) {
+        if (!state.Graphs) { state.Graphs = new models.Graphs() };
         const marketHashName = e.target.parentElement.id;
         await addRecentItemSalesInfo(state.gameAppID, marketHashName);
-        displayRecentItemSalesInfo(marketHashName, state.AssetPrice.recentItemSalesInfo[state.gameAppID][marketHashName]);
+        state.Graphs.addItemSalesGraph(state.gameAppID, marketHashName);
+        toggleRecentItemSalesInfo(marketHashName, state.AssetPrice.recentItemSalesInfo[state.gameAppID][marketHashName]);
     }
 });
 
@@ -117,8 +124,12 @@ const displayNInventoryItems = (inventory, allItemPrices, priceDataForItemsOnSal
     views.gameInventoryListView.renderDisplayQuantityButtons(inventory);
 }
 
-const displayRecentItemSalesInfo = (marketHashName, recentItemSalesInfo) => {
-    views.gameInventoryListView.renderRecentItemSalesInfoChart(marketHashName, recentItemSalesInfo);
+const toggleRecentItemSalesInfo = (marketHashName, recentItemSalesInfo) => {
+    if (state.Graphs.itemSalesList[state.gameAppID].indexOf(marketHashName) == -1) {
+        views.gameInventoryListView.unrenderRecentItemSalesInfoChart(marketHashName);
+    } else {
+        views.gameInventoryListView.renderRecentItemSalesInfoChart(marketHashName, recentItemSalesInfo);
+    }
 }
 
 window.state = state;
