@@ -5,48 +5,63 @@ export const clearInventoryList = () => {
     elements.gameInventoryList.innerHTML = '';
 };
 
+export const unrenderRecentItemSalesInfoChart = (marketHashName) => {
+    let itemDOM = document.getElementById(`${marketHashName}`);
+    if (itemDOM.classList.contains('inventory__item-showmore')) {
+        itemDOM.classList.replace('inventory__item-showmore', 'inventory__item-showless');
+        itemDOM.firstElementChild.textContent = "SHOW MORE INFO";
+    }
+}
+
 export const renderRecentItemSalesInfoChart = (marketHashName, recentItemSalesInfo) => {
     let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     let priceData = [];
     let soldDateData = [];
-    recentItemSalesInfo.reverse().forEach( element => { 
-        let currentDate = new Date(element.sold_at * 1000);
-        priceData.push(element.price);
-        soldDateData.push(`${months[currentDate.getMonth()]} ${currentDate.getDate()}, ${currentDate.getHours()}:${currentDate.getMinutes() < 10 ? '0' + currentDate.getMinutes() : currentDate.getMinutes()}`);    
-    });
-    let markup = `<td colspan="7"><canvas id="${marketHashName}__salesInfo"></canvas></td>`;
-    document.getElementById(`${marketHashName}`).innerHTML = markup;
-    var ctx = document.getElementById(`${marketHashName}__salesInfo`);
-    var chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: soldDateData,
-            datasets: [{
-                label: `${marketHashName} Sales History`,
-                backgroundColor: 'rgb(255, 99, 132)',
-                borderColor: 'rgb(255, 99, 132)',
-                data: priceData,
-            }]
-        },
-        options: {
-            maintainAspectRatio: false,
-            responsive: true,
-            scales: {
-                yAxes: [{
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Price (USD)'
-                    }
-                }],
-                xAxes: [{
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Date Sold'
-                    }
+    if (recentItemSalesInfo) {
+        recentItemSalesInfo.reverse().forEach( element => { 
+            let currentDate = new Date(element.sold_at * 1000);
+            priceData.push(element.price);
+            soldDateData.push(`${months[currentDate.getMonth()]} ${currentDate.getDate()}, ${currentDate.getHours()}:${currentDate.getMinutes() < 10 ? '0' + currentDate.getMinutes() : currentDate.getMinutes()}`);    
+        });
+    }
+
+    let itemDOM = document.getElementById(`${marketHashName}`);
+    if (itemDOM.classList.contains('inventory__item-showless')) {
+        itemDOM.classList.replace('inventory__item-showless', 'inventory__item-showmore');
+        let markup = `<td colspan="7"><canvas id="${marketHashName}__salesInfo"></canvas></td>`;
+        itemDOM.firstElementChild.innerHTML = markup;
+        var ctx = document.getElementById(`${marketHashName}__salesInfo`);
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: soldDateData,
+                datasets: [{
+                    label: `${marketHashName} Value`,
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: priceData,
                 }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: {
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Price (USD)'
+                        }
+                    }],
+                    xAxes: [{
+                        scaleLabel: {
+                            display: false,
+                            labelString: 'Date Sold'
+                        }
+                    }]
+                }
             }
-        }
-    });
+        });
+    }
 }
 
 export const renderResults = (inventory, allItemPrices, priceDataForItemsOnSale, page = 1, resPerPage = 10) => {
@@ -141,8 +156,8 @@ const renderItemRow = (inventoryItem, itemPrice, priceData) => {
         <td>${priceData !== undefined && priceData.lowest_price !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(priceData.lowest_price) : '---' }</td>
         <td>${itemPrice !== undefined && itemPrice.current_price !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(itemPrice.current_price) : '---' }</td>
         <td>${inventoryItem !== undefined && inventoryItem.suggested_price !== undefined ? Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(inventoryItem.suggested_price) : '---' }</td>
-        <tr id="${inventoryItem.market_hash_name}" class="inventory__item inventory__item-showmore" colspan="7">
-            <td colspan="7">SHOW MORE INFO</td>
+        <tr id="${inventoryItem.market_hash_name}" class="inventory__item inventory__item-showless" colspan="7">
+            <td colspan="7" style="text-align: center">SHOW MORE INFO</td>
         </tr>
     </tr>
     `;
