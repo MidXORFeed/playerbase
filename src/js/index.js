@@ -131,5 +131,3 @@ const toggleRecentItemSalesInfo = (marketHashName, recentItemSalesInfo) => {
         views.gameInventoryListView.renderRecentItemSalesInfoChart(marketHashName, recentItemSalesInfo);
     }
 }
-
-window.state = state;
